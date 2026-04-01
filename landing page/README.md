@@ -6,36 +6,26 @@ A modern, minimal travel landing page built with pure HTML & CSS as part of Week
 
 ## 🧭 About This Project
 
-**Wander** is a landing page for a travel community built for explorers who love discovering the world differently — together.
+Wander is a landing page for a travel community built for explorers who love discovering the world differently — together.
 
 The page represents a platform where like-minded travellers can:
 
-- **Discover** curated destinations across 48+ countries
-- **Connect** with local expert guides and fellow explorers
-- **Share** travel stories, itineraries, and hidden gems
-- **Plan** meaningful journeys rooted in culture and sustainability
+- Discover curated destinations across 48+ countries
+- Connect with local expert guides and fellow explorers
+- Share travel stories, itineraries, and hidden gems
+- Plan meaningful journeys rooted in culture and sustainability
 
 The community is built around the idea that the best travel experiences come not from tourist checklists, but from genuine human connections and slow, purposeful exploration. Whether you're a backpacker, a luxury seeker, or a digital nomad — Wander is a home for every kind of explorer.
 
 > *"Not all those who wander are lost — but with Wander, you'll always find something extraordinary."*
 
----
 
-## 📁 Project Structure
-
-```
-wander-landing/
-├── index.html        ← Main landing page
-├── about.html        ← About page (Task 2)
-└── README.md         ← You are here
-```
 
 ---
 
 ## ✅ What's Built
 
 | Feature | Tech Used |
-|---|---|
 | Fixed navigation bar with blur | CSS `position: fixed`, `backdrop-filter` |
 | Hero section with image grid | Flexbox, CSS Grid |
 | Scrolling destinations marquee | CSS `@keyframes` animation |
@@ -116,27 +106,6 @@ python -m http.server 3000
 # Then visit http://localhost:3000
 ```
 
-
-```
-screenshots/
-├── desktop-hero.png
-├── destinations-section.png
-└── mobile-view.png
-```
-
----
-
-## 🔗 Live Demo
-
-> Deploy to GitHub Pages and paste the link here.
-
-`https://your-username.github.io/wander-landing/`
-
----
-
-## 👤 Author
-
-**Your Name**  
 Week 2 — Web Development Fundamentals  
 Focus: HTML, CSS, Flexbox
 
