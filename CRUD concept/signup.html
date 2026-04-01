@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account — Wander</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --sand: #f5f0e8;
+      --ink: #1a1814;
+      --muted: #8a8478;
+      --accent: #c8a96e;
+      --light: #faf8f4;
+      --danger: #c0392b;
+      --success: #27ae60;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--light);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 10% 20%, rgba(200,169,110,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 90% 80%, rgba(200,169,110,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .page-wrap {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* Left decorative panel */
+    .left-panel {
+      flex: 1;
+      background: var(--ink);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .left-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=70') center/cover no-repeat;
+      opacity: 0.25;
+    }
+    .left-content { position: relative; z-index: 1; }
+    .brand-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--light);
+      text-decoration: none;
+    }
+    .brand-logo span { color: var(--accent); }
+    .left-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--light);
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+    .left-quote em { color: var(--accent); font-style: normal; }
+    .left-sub {
+      font-size: 0.8rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: rgba(250,248,244,0.5);
+      margin-top: 12px;
+    }
+
+    /* Right form panel */
+    .right-panel {
+      width: 480px;
+      flex-shrink: 0;
+      padding: 60px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--light);
+    }
+
+    .form-tag {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .form-tag::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem;
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .form-desc {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--muted);
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 14px 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--ink);
+      background: white;
+      border: 1px solid rgba(26,24,20,0.15);
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--accent); }
+    input.error { border-color: var(--danger); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--light);
+      background: var(--ink);
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.3s;
+      position: relative;
+    }
+    .btn-submit:hover:not(:disabled) { background: var(--accent); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 2px;
+      font-size: 0.82rem;
+      font-weight: 300;
+      margin-bottom: 20px;
+      display: none;
+      line-height: 1.5;
+    }
+    .alert.show { display: block; }
+    .alert-error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); color: var(--danger); }
+    .alert-success { background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.2); color: var(--success); }
+
+    .switch-link {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: var(--muted);
+    }
+    .switch-link a {
+      color: var(--ink);
+      font-weight: 500;
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(26,24,20,0.1);
+    }
+
+    @media (max-width: 900px) {
+      .left-panel { display: none; }
+      .right-panel { width: 100%; padding: 48px 28px; }
+    }
+
+    /* Fade-in animation */
+    .right-panel > * {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: fadeUp 0.6s ease forwards;
+    }
+    .right-panel > *:nth-child(1) { animation-delay: 0.05s; }
+    .right-panel > *:nth-child(2) { animation-delay: 0.12s; }
+    .right-panel > *:nth-child(3) { animation-delay: 0.18s; }
+    .right-panel > *:nth-child(4) { animation-delay: 0.24s; }
+    .right-panel > *:nth-child(5) { animation-delay: 0.30s; }
+    .right-panel > *:nth-child(6) { animation-delay: 0.36s; }
+    @keyframes fadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Left decorative panel -->
+  <div class="left-panel">
+    <div class="left-content">
+      <a href="index.html" class="brand-logo">Wan<span>d</span>er</a>
+    </div>
+    <div class="left-content">
+      <div class="left-quote">Begin your<br><em>journey</em><br>today.</div>
+      <div class="left-sub">Join 1,200+ travellers exploring the world differently.</div>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="right-panel">
+    <div class="form-tag">New account</div>
+    <h1>Create your<br>account</h1>
+    <p class="form-desc">Start planning unforgettable journeys. Free forever.</p>
+
+    <!-- Alert box -->
+    <div class="alert alert-error" id="alert-error"></div>
+    <div class="alert alert-success" id="alert-success"></div>
+
+    <form id="signup-form" novalidate>
+      <div class="two-col">
+        <div class="field">
+          <label for="first-name">First name</label>
+          <input type="text" id="first-name" placeholder="Sara" required/>
+        </div>
+        <div class="field">
+          <label for="last-name">Last name</label>
+          <input type="text" id="last-name" placeholder="Ahmed" required/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email address</label>
+        <input type="email" id="email" placeholder="sara@email.com" required/>
+      </div>
+
+      <div class="field">
+        <label for="phone">Phone number (optional)</label>
+        <input type="tel" id="phone" placeholder="+977 98XXXXXXXX"/>
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Min. 6 characters" required/>
+      </div>
+
+      <div class="field">
+        <label for="confirm-password">Confirm password</label>
+        <input type="password" id="confirm-password" placeholder="Repeat password" required/>
+      </div>
+
+      <button type="submit" class="btn-submit" id="submit-btn">
+        Create account
+      </button>
+    </form>
+
+    <div class="switch-link">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import {
+    createUserWithEmailAndPassword,
+    updateProfile
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import {
+    doc, setDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const form       = document.getElementById('signup-form');
+  const submitBtn  = document.getElementById('submit-btn');
+  const alertError = document.getElementById('alert-error');
+  const alertOk    = document.getElementById('alert-success');
+
+  function showError(msg) {
+    alertError.textContent = msg;
+    alertError.classList.add('show');
+    alertOk.classList.remove('show');
+  }
+  function showSuccess(msg) {
+    alertOk.textContent = msg;
+    alertOk.classList.add('show');
+    alertError.classList.remove('show');
+  }
+  function setLoading(on) {
+    submitBtn.disabled = on;
+    submitBtn.innerHTML = on
+      ? '<span class="spinner"></span> Creating account…'
+      : 'Create account';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const firstName = document.getElementById('first-name').value.trim();
+    const lastName  = document.getElementById('last-name').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const phone     = document.getElementById('phone').value.trim();
+    const password  = document.getElementById('password').value;
+    const confirm   = document.getElementById('confirm-password').value;
+
+    // Validation
+    if (!firstName || !lastName) return showError('Please enter your full name.');
+    if (!email)                   return showError('Please enter your email.');
+    if (password.length < 6)      return showError('Password must be at least 6 characters.');
+    if (password !== confirm)     return showError('Passwords do not match.');
+
+    setLoading(true);
+
+    try {
+      // 1. Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2. Update display name in Auth
+      await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+
+      // 3. Save full profile to Firestore "users" collection
+      await setDoc(doc(db, 'users', user.uid), {
+        uid:       user.uid,
+        firstName: firstName,
+        lastName:  lastName,
+        fullName:  `${firstName} ${lastName}`,
+        email:     email,
+        phone:     phone || '',
+        bio:       '',
+        location:  '',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+
+      showSuccess('Account created! Redirecting to your profile…');
+      setTimeout(() => { window.location.href = 'profile.html'; }, 1500);
+
+    } catch (err) {
+      // Firebase error codes → readable messages
+      const msgs = {
+        'auth/email-already-in-use': 'This email is already registered. Try logging in.',
+        'auth/invalid-email':        'Please enter a valid email address.',
+        'auth/weak-password':        'Password is too weak. Use at least 6 characters.',
+        'auth/network-request-failed': 'Network error. Check your connection.',
+      };
+      showError(msgs[err.code] || `Error: ${err.message}`);
+      setLoading(false);
+    }
+  });
+</script>
+</body>
+</html>

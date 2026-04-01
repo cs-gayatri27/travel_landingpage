@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wander Travel with Purpose</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --sand: #f5f0e8;
+      --ink: #1a1814;
+      --muted: #8a8478;
+      --accent: #c8a96e;
+      --light: #faf8f4;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--light);
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 60px;
+      background: rgba(250,248,244,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(200,169,110,0.15);
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+
+    .nav-cta {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--light);
+      background: var(--ink);
+      padding: 12px 28px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .nav-cta:hover { background: var(--accent); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 140px 60px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 75% 50%, rgba(200,169,110,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(200,169,110,0.05) 0%, transparent 60%);
+    }
+
+    .hero-grid {
+      display: flex;
+      align-items: center;
+      gap: 80px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      position: relative;
+    }
+
+    .hero-text { flex: 1; }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-tag::before {
+      content: '';
+      width: 30px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 6vw, 6rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.35s forwards;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--muted);
+      max-width: 420px;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.5s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.65s forwards;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--light);
+      background: var(--ink);
+      padding: 18px 40px;
+      text-decoration: none;
+      border: 1px solid var(--ink);
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .btn-ghost {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s;
+    }
+
+    .btn-ghost:hover { color: var(--ink); }
+
+    .btn-ghost span { font-size: 1.1rem; }
+
+    /* Hero Visual */
+    .hero-visual {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      opacity: 0;
+      animation: fadeIn 1.2s ease 0.5s forwards;
+    }
+
+    .img-stack {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 16px;
+    }
+
+    .img-card {
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .img-card.tall { grid-row: span 2; }
+
+    .img-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+    }
+
+    .img-card:hover img { transform: scale(1.04); }
+
+    .img-card.tall { height: 420px; }
+    .img-card:not(.tall) { height: 196px; }
+
+    .img-label {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(26,24,20,0.5);
+      backdrop-filter: blur(6px);
+      padding: 6px 12px;
+    }
+
+    /* Stats */
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* ── MARQUEE ── */
+    .marquee-wrap {
+      border-top: 1px solid rgba(26,24,20,0.08);
+      border-bottom: 1px solid rgba(26,24,20,0.08);
+      overflow: hidden;
+      padding: 18px 0;
+      background: var(--sand);
+    }
+
+    .marquee {
+      display: flex;
+      gap: 60px;
+      animation: marquee 20s linear infinite;
+      white-space: nowrap;
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .marquee-dot {
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* ── DESTINATIONS ── */
+    .destinations {
+      padding: 120px 60px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 60px;
+    }
+
+    .section-tag {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-tag::before {
+      content: '';
+      width: 24px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 300;
+      line-height: 1.15;
+    }
+
+    .view-all {
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.3s;
+    }
+
+    .view-all:hover { color: var(--ink); }
+
+    .dest-grid {
+      display: flex;
+      gap: 24px;
+    }
+
+    .dest-card {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+
+    .dest-card img {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.7s ease;
+      filter: brightness(0.85);
+    }
+
+    .dest-card:hover img {
+      transform: scale(1.06);
+      filter: brightness(0.75);
+    }
+
+    .dest-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 40px 28px 28px;
+      background: linear-gradient(to top, rgba(26,24,20,0.75) 0%, transparent 100%);
+      color: #fff;
+    }
+
+    .dest-country {
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.75;
+      margin-bottom: 6px;
+    }
+
+    .dest-city {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      line-height: 1;
+    }
+
+    .dest-meta {
+      margin-top: 10px;
+      font-size: 0.72rem;
+      opacity: 0.7;
+      display: flex;
+      gap: 14px;
+    }
+
+    /* ── EXPERIENCE ── */
+    .experience {
+      background: var(--sand);
+      padding: 120px 60px;
+    }
+
+    .exp-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .exp-text { flex: 1; }
+
+    .exp-text p {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--muted);
+      margin: 24px 0 40px;
+      max-width: 460px;
+    }
+
+    .exp-features {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 20px;
+      background: var(--light);
+      border-left: 2px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .feature:hover { border-left-color: var(--accent); }
+
+    .feature-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .feature-title {
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+
+    .feature-desc {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .exp-visual { flex: 1; }
+
+    .quote-block {
+      padding: 48px;
+      background: var(--ink);
+      color: var(--light);
+      position: relative;
+    }
+
+    .quote-mark {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 6rem;
+      font-weight: 300;
+      color: var(--accent);
+      line-height: 0.5;
+      margin-bottom: 24px;
+      display: block;
+    }
+
+    .quote-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.5;
+      color: var(--light);
+      margin-bottom: 28px;
+    }
+
+    .quote-author {
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* ── NEWSLETTER ── */
+    .newsletter {
+      padding: 120px 60px;
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .newsletter h2 { margin-bottom: 20px; }
+
+    .newsletter p {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 0;
+      border: 1px solid rgba(26,24,20,0.2);
+    }
+
+    .input-row input {
+      flex: 1;
+      padding: 18px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: var(--ink);
+      background: transparent;
+      border: none;
+      outline: none;
+    }
+
+    .input-row input::placeholder { color: var(--muted); }
+
+    .input-row button {
+      padding: 18px 32px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--light);
+      background: var(--ink);
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .input-row button:hover { background: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid rgba(26,24,20,0.1);
+      padding: 48px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .footer-logo span { color: var(--accent); }
+
+    .footer-copy {
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.72rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer-links a:hover { color: var(--ink); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 22px 28px; }
+      .nav-links { display: none; }
+      .hero { padding: 120px 28px 60px; }
+      .hero-grid { flex-direction: column; gap: 48px; }
+      .destinations { padding: 80px 28px; }
+      .dest-grid { flex-direction: column; }
+      .experience { padding: 80px 28px; }
+      .exp-inner { flex-direction: column; gap: 48px; }
+      .newsletter { padding: 80px 28px; }
+      footer { padding: 40px 28px; flex-direction: column; gap: 20px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="logo">Wan<span>d</span>er</a>
+    <ul class="nav-links">
+      <li><a href="#destinations">Destinations</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#stories">Stories</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <a href="#newsletter" class="nav-cta">Plan Your Trip</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid">
+      <div class="hero-text">
+        <div class="hero-tag">Travel Experiences</div>
+        <h1>Explore the<br><em>World</em><br>Differently</h1>
+        <p class="hero-desc">Slow travel, hidden places, and meaningful connections. We craft journeys that go beyond the ordinary and guided by curiosity, shaped by culture.</p>
+        <div class="hero-actions">
+          <a href="#destinations" class="btn-primary">Explore Destinations</a>
+          <a href="#experience" class="btn-ghost"><span>▶</span> Our Story</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="img-stack">
+          <div class="img-card tall">
+            <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Mountain landscape"/>
+            <span class="img-label">Himalaya, Nepal</span>
+          </div>
+          <div class="img-card">
+            <img src="https://images.unsplash.com/photo-1523906834658-6e24ef2386f9?w=400&q=80" alt="Venice canal"/>
+            <span class="img-label">Venice, Italy</span>
+          </div>
+          <div class="img-card">
+            <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&q=80" alt="Kyoto Japan"/>
+            <span class="img-label">Kyoto, Japan</span>
+          </div>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-num">48+</div>
+            <div class="stat-label">Countries</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">1.2k</div>
+            <div class="stat-label">Travelers</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num">320</div>
+            <div class="stat-label">Itineraries</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MARQUEE
+  <div class="marquee-wrap">
+    <div class="marquee">
+      <div class="marquee-item"><span class="marquee-dot"></span> Southeast Asia</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> European Escapes</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> African Safaris</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Himalayan Treks</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Island Retreats</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Desert Journeys</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Arctic Expeditions</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Southeast Asia</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> European Escapes</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> African Safaris</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Himalayan Treks</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Island Retreats</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Desert Journeys</div>
+      <div class="marquee-item"><span class="marquee-dot"></span> Arctic Expeditions</div>
+    </div>
+  </div> -->
+
+  <!-- DESTINATIONS -->
+  <section class="destinations" id="destinations">
+    <div class="section-header">
+      <div>
+        <div class="section-tag">Where to next</div>
+        <h2>Featured<br>Destinations</h2>
+      </div>
+      <a href="#" class="view-all">View All →</a>
+    </div>
+    <div class="dest-grid">
+      <div class="dest-card">
+        <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=600&q=80" alt="Bali"/>
+        <div class="dest-info">
+          <div class="dest-country">Indonesia</div>
+          <div class="dest-city">Bali</div>
+          <div class="dest-meta"><span>7–14 days</span><span>·</span><span>From $1,200</span></div>
+        </div>
+      </div>
+      <div class="dest-card">
+        <img src="https://images.unsplash.com/photo-1555993539-1732b0258235?w=600&q=80" alt="Morocco"/>
+        <div class="dest-info">
+          <div class="dest-country">Morocco</div>
+          <div class="dest-city">Marrakech</div>
+          <div class="dest-meta"><span>5–10 days</span><span>·</span><span>From $950</span></div>
+        </div>
+      </div>
+      <div class="dest-card">
+        <img src="https://images.unsplash.com/photo-1602088113235-229c19758e9f?w=600&q=80" alt="Maldives"/>
+        <div class="dest-info">
+          <div class="dest-country">Maldives</div>
+          <div class="dest-city">Malé Atoll</div>
+          <div class="dest-meta"><span>5–8 days</span><span>·</span><span>From $2,100</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section class="experience" id="experience">
+    <div class="exp-inner">
+      <div class="exp-text">
+        <div class="section-tag">Why Wander</div>
+        <h2>Travel that<br>Means Something</h2>
+        <p>We believe the best journeys are the ones that change you. Every itinerary we craft is rooted in authentic experience: local guides, hidden gems, and real moments.</p>
+        <div class="exp-features">
+          <div class="feature">
+            <div class="feature-icon">🗺️</div>
+            <div>
+              <div class="feature-title">Handcrafted Itineraries</div>
+              <div class="feature-desc">No cookie-cutter tours. Every trip is built around you — your pace, your passions, your curiosity.</div>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🤝</div>
+            <div>
+              <div class="feature-title">Local Expert Guides</div>
+              <div class="feature-desc">Connect with guides who live and breathe their destinations, revealing stories no guidebook can tell.</div>
+            </div>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">🌱</div>
+            <div>
+              <div class="feature-title">Sustainable Travel</div>
+              <div class="feature-desc">We partner with eco-conscious operators and give back to local communities on every journey.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="exp-visual">
+        <div class="quote-block">
+          <span class="quote-mark">"</span>
+          <p class="quote-text">Not all those who wander are lost — but with Wander, you'll always find something extraordinary.</p>
+          <div class="quote-author">— Priya S., Traveler since 2021</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="newsletter" id="newsletter">
+    <div class="section-tag" style="justify-content:center;">Stay Inspired</div>
+    <h2>Never Miss a<br><em style="font-style:italic;color:var(--accent)">Destination</em></h2>
+    <p>Get curated travel guides, hidden gems, and seasonal itineraries delivered to your inbox — no spam, just wanderlust.</p>
+    <div class="input-row">
+      <input type="email" placeholder="Your email address"/>
+      <button type="button">Subscribe</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <a href="#" class="footer-logo">Wan<span>d</span>er</a>
+    <p class="footer-copy">© 2025 Wander with gayatri. Crafted with curiosity.</p>
+    <ul class="footer-links">
+      <li><a href="#">Instagram</a></li>
+      <!-- <li><a href="#">Twitter</a></li>
+      <li><a href="#">Pinterest</a></li> -->
+    </ul>
+  </footer>
+
+</body>
+</html>

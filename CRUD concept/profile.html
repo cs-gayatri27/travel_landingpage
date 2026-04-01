@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Profile — Wander</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --sand: #f5f0e8;
+      --ink: #1a1814;
+      --muted: #8a8478;
+      --accent: #c8a96e;
+      --light: #faf8f4;
+      --danger: #c0392b;
+      --success: #27ae60;
+      --border: rgba(26,24,20,0.1);
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--sand);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 60px;
+      background: rgba(245,240,232,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .brand span { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .nav-user {
+      font-size: 0.8rem;
+      font-weight: 300;
+      color: var(--muted);
+    }
+    .btn-logout {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      padding: 8px 18px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { color: var(--ink); border-color: var(--ink); }
+
+    /* LOADING SCREEN */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--sand);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      gap: 16px;
+    }
+    .loading-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+    }
+    .loading-logo span { color: var(--accent); }
+    .loading-bar-wrap {
+      width: 120px;
+      height: 1px;
+      background: var(--border);
+    }
+    .loading-bar {
+      height: 100%;
+      background: var(--accent);
+      animation: loadBar 1.2s ease-in-out infinite;
+    }
+    @keyframes loadBar {
+      0%   { width: 0%; margin-left: 0; }
+      50%  { width: 80%; margin-left: 0; }
+      100% { width: 0%;  margin-left: 100%; }
+    }
+
+    /* MAIN LAYOUT */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      display: none;
+    }
+    main.visible { display: block; }
+
+    /* Profile header card */
+    .profile-header {
+      background: var(--ink);
+      border-radius: 4px;
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.1s both;
+    }
+    .profile-header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      border: 40px solid rgba(200,169,110,0.08);
+    }
+    .avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--ink);
+      flex-shrink: 0;
+      letter-spacing: 0.04em;
+    }
+    .profile-header-text { flex: 1; }
+    .welcome-label {
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(200,169,110,0.7);
+      margin-bottom: 4px;
+    }
+    .profile-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--light);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .profile-email {
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: rgba(250,248,244,0.5);
+    }
+    .member-since {
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: rgba(250,248,244,0.35);
+      margin-top: 4px;
+    }
+
+    /* Firestore badge */
+    .db-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(200,169,110,0.8);
+      border: 1px solid rgba(200,169,110,0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      flex-shrink: 0;
+    }
+    .db-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.5s ease 0.2s both;
+    }
+    .stat-card {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px 24px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Section card */
+    .section-card {
+      background: var(--light);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease 0.3s both;
+    }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .btn-edit {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.2s;
+    }
+    .btn-edit:hover { opacity: 0.7; }
+
+    .section-body { padding: 24px 28px; }
+
+    /* Field rows (view mode) */
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 32px;
+    }
+    .field-item { }
+    .field-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .field-value {
+      font-size: 0.95rem;
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .field-value.empty {
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.85rem;
+    }
+
+    /* Edit form */
+    .edit-form { display: none; }
+    .edit-form.active { display: block; }
+    .view-mode.hidden { display: none; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 24px;
+    }
+    .form-field { }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-label {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 300;
+      color: var(--ink);
+      background: white;
+      border: 1px solid rgba(26,24,20,0.15);
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .btn-save {
+      padding: 12px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--light);
+      background: var(--ink);
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-save:hover:not(:disabled) { background: var(--accent); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-cancel {
+      padding: 12px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-cancel:hover { color: var(--ink); border-color: var(--ink); }
+
+    /* Alert */
+    .alert {
+      padding: 10px 16px;
+      border-radius: 2px;
+      font-size: 0.8rem;
+      font-weight: 300;
+      margin-top: 14px;
+      display: none;
+      line-height: 1.5;
+    }
+    .alert.show { display: block; }
+    .alert-error { background: rgba(192,57,43,0.08); border: 1px solid rgba(192,57,43,0.2); color: var(--danger); }
+    .alert-success { background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.2); color: var(--success); }
+
+    /* Danger zone */
+    .danger-zone {
+      border: 1px solid rgba(192,57,43,0.2);
+      border-radius: 4px;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: fadeUp 0.5s ease 0.4s both;
+    }
+    .danger-text h3 {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--danger);
+      margin-bottom: 2px;
+    }
+    .danger-text p { font-size: 0.78rem; font-weight: 300; color: var(--muted); }
+    .btn-danger {
+      padding: 10px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--danger);
+      background: transparent;
+      border: 1px solid rgba(192,57,43,0.3);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-danger:hover { background: rgba(192,57,43,0.06); }
+
+    .spinner {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 700px) {
+      nav { padding: 16px 20px; }
+      main { padding: 24px 16px 60px; }
+      .profile-header { padding: 24px; flex-direction: column; align-items: flex-start; gap: 16px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .field-grid, .form-grid { grid-template-columns: 1fr; }
+      .form-field.full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading screen -->
+  <div id="loading-screen">
+    <div class="loading-logo">Wan<span>d</span>er</div>
+    <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="index.html" class="brand">Wan<span>d</span>er</a>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-user-name">Loading…</span>
+      <button class="btn-logout" id="logout-btn">Sign out</button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main id="main-content">
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="avatar" id="avatar-initials">??</div>
+      <div class="profile-header-text">
+        <div class="welcome-label">Welcome back</div>
+        <div class="profile-name" id="display-name">Loading…</div>
+        <div class="profile-email" id="display-email"></div>
+        <div class="member-since" id="display-joined"></div>
+      </div>
+      <div class="db-badge">
+        <div class="db-dot"></div>
+        Firestore live
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Saved trips</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Countries visited</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Days travelled</div>
+      </div>
+    </div>
+
+    <!-- Personal info section -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-title">Personal information</div>
+        <button class="btn-edit" id="edit-personal-btn" onclick="toggleEdit('personal')">Edit</button>
+      </div>
+      <div class="section-body">
+
+        <!-- VIEW MODE -->
+        <div class="view-mode" id="personal-view">
+          <div class="field-grid">
+            <div class="field-item">
+              <div class="field-label">First name</div>
+              <div class="field-value" id="view-firstName">—</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Last name</div>
+              <div class="field-value" id="view-lastName">—</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Email</div>
+              <div class="field-value" id="view-email">—</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Phone</div>
+              <div class="field-value" id="view-phone">—</div>
+            </div>
+            <div class="field-item" style="grid-column: 1 / -1">
+              <div class="field-label">Bio</div>
+              <div class="field-value" id="view-bio">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EDIT MODE -->
+        <div class="edit-form" id="personal-edit">
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">First name</label>
+              <input type="text" id="edit-firstName" placeholder="Sara"/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Last name</label>
+              <input type="text" id="edit-lastName" placeholder="Ahmed"/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Phone</label>
+              <input type="tel" id="edit-phone" placeholder="+977 98XXXXXXXX"/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Location</label>
+              <input type="text" id="edit-location" placeholder="Kathmandu, Nepal"/>
+            </div>
+            <div class="form-field full">
+              <label class="form-label">Bio</label>
+              <textarea id="edit-bio" placeholder="Tell us about yourself and your travel style…"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-save" id="save-personal-btn" onclick="savePersonal()">Save changes</button>
+            <button class="btn-cancel" onclick="toggleEdit('personal')">Cancel</button>
+          </div>
+          <div class="alert alert-error"   id="personal-error"></div>
+          <div class="alert alert-success" id="personal-success"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Travel preferences section -->
+    <div class="section-card" style="animation-delay:0.35s">
+      <div class="section-head">
+        <div class="section-title">Travel preferences</div>
+        <button class="btn-edit" id="edit-travel-btn" onclick="toggleEdit('travel')">Edit</button>
+      </div>
+      <div class="section-body">
+
+        <div class="view-mode" id="travel-view">
+          <div class="field-grid">
+            <div class="field-item">
+              <div class="field-label">Travel style</div>
+              <div class="field-value" id="view-travelStyle">—</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Favourite region</div>
+              <div class="field-value" id="view-favRegion">—</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Budget range</div>
+              <div class="field-value" id="view-budget">—</div>
+            </div>
+            <div class="field-item">
+              <div class="field-label">Location</div>
+              <div class="field-value" id="view-location">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="edit-form" id="travel-edit">
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Travel style</label>
+              <select id="edit-travelStyle">
+                <option value="">Select…</option>
+                <option>Backpacker</option>
+                <option>Slow traveller</option>
+                <option>Luxury seeker</option>
+                <option>Adventure junkie</option>
+                <option>Cultural explorer</option>
+                <option>Digital nomad</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Favourite region</label>
+              <select id="edit-favRegion">
+                <option value="">Select…</option>
+                <option>Southeast Asia</option>
+                <option>Europe</option>
+                <option>South Asia</option>
+                <option>Middle East</option>
+                <option>Africa</option>
+                <option>The Americas</option>
+                <option>Oceania</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Budget range</label>
+              <select id="edit-budget">
+                <option value="">Select…</option>
+                <option>Budget ($0–$50/day)</option>
+                <option>Mid-range ($50–$150/day)</option>
+                <option>Premium ($150–$300/day)</option>
+                <option>Luxury ($300+/day)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-save" id="save-travel-btn" onclick="saveTravel()">Save changes</button>
+            <button class="btn-cancel" onclick="toggleEdit('travel')">Cancel</button>
+          </div>
+          <div class="alert alert-error"   id="travel-error"></div>
+          <div class="alert alert-success" id="travel-success"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="danger-zone">
+      <div class="danger-text">
+        <h3>Sign out of Wander</h3>
+        <p>You'll need to log in again to access your profile.</p>
+      </div>
+      <button class="btn-danger" id="logout-btn-2">Sign out</button>
+    </div>
+
+  </main>
+
+<script type="module">
+  import { auth, db } from './firebase-config.js';
+  import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import {
+    doc, getDoc, updateDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  let currentUser = null;
+  let userData    = {};
+
+  // ── AUTH GUARD ──────────────────────────────────────────────
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      // Not logged in → redirect
+      window.location.href = 'login.html';
+      return;
+    }
+    currentUser = user;
+    await loadProfile(user.uid);
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('main-content').classList.add('visible');
+  });
+
+  // ── LOAD PROFILE FROM FIRESTORE ──────────────────────────────
+  async function loadProfile(uid) {
+    try {
+      const snap = await getDoc(doc(db, 'users', uid));
+      if (!snap.exists()) return;
+      userData = snap.data();
+
+      // Header
+      const initials = ((userData.firstName||'?')[0] + (userData.lastName||'?')[0]).toUpperCase();
+      document.getElementById('avatar-initials').textContent = initials;
+      document.getElementById('display-name').textContent = userData.fullName || 'Traveller';
+      document.getElementById('display-email').textContent = userData.email || '';
+      document.getElementById('nav-user-name').textContent = userData.firstName || 'Traveller';
+
+      if (userData.createdAt?.toDate) {
+        const d = userData.createdAt.toDate();
+        document.getElementById('display-joined').textContent =
+          'Member since ' + d.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+      }
+
+      // Personal view
+      setText('view-firstName', userData.firstName);
+      setText('view-lastName',  userData.lastName);
+      setText('view-email',     userData.email);
+      setText('view-phone',     userData.phone);
+      setText('view-bio',       userData.bio);
+      setText('view-location',  userData.location);
+
+      // Travel view
+      setText('view-travelStyle', userData.travelStyle);
+      setText('view-favRegion',   userData.favRegion);
+      setText('view-budget',      userData.budget);
+
+      // Pre-fill edit forms
+      setVal('edit-firstName',   userData.firstName);
+      setVal('edit-lastName',    userData.lastName);
+      setVal('edit-phone',       userData.phone);
+      setVal('edit-bio',         userData.bio);
+      setVal('edit-location',    userData.location);
+      setVal('edit-travelStyle', userData.travelStyle);
+      setVal('edit-favRegion',   userData.favRegion);
+      setVal('edit-budget',      userData.budget);
+
+    } catch (err) {
+      console.error('Error loading profile:', err);
+    }
+  }
+
+  function setText(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (val) {
+      el.textContent = val;
+      el.classList.remove('empty');
+    } else {
+      el.textContent = 'Not set';
+      el.classList.add('empty');
+    }
+  }
+  function setVal(id, val) {
+    const el = document.getElementById(id);
+    if (el && val) el.value = val;
+  }
+
+  // ── TOGGLE EDIT / VIEW ────────────────────────────────────────
+  window.toggleEdit = function(section) {
+    const view = document.getElementById(`${section}-view`);
+    const edit = document.getElementById(`${section}-edit`);
+    const btn  = document.getElementById(`edit-${section}-btn`);
+    const isEditing = edit.classList.contains('active');
+    if (isEditing) {
+      edit.classList.remove('active');
+      view.classList.remove('hidden');
+      btn.textContent = 'Edit';
+    } else {
+      edit.classList.add('active');
+      view.classList.add('hidden');
+      btn.textContent = 'Cancel';
+    }
+  };
+
+  // ── SAVE PERSONAL INFO ────────────────────────────────────────
+  window.savePersonal = async function() {
+    const btn = document.getElementById('save-personal-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Saving…';
+
+    const firstName = document.getElementById('edit-firstName').value.trim();
+    const lastName  = document.getElementById('edit-lastName').value.trim();
+    const phone     = document.getElementById('edit-phone').value.trim();
+    const bio       = document.getElementById('edit-bio').value.trim();
+    const location  = document.getElementById('edit-location').value.trim();
+
+    if (!firstName || !lastName) {
+      showAlert('personal-error', 'First and last name are required.');
+      btn.disabled = false; btn.textContent = 'Save changes';
+      return;
+    }
+
+    try {
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        firstName,
+        lastName,
+        fullName: `${firstName} ${lastName}`,
+        phone,
+        bio,
+        location,
+        updatedAt: serverTimestamp(),
+      });
+
+      // Refresh view
+      userData = { ...userData, firstName, lastName, fullName:`${firstName} ${lastName}`, phone, bio, location };
+      setText('view-firstName', firstName);
+      setText('view-lastName',  lastName);
+      setText('view-phone',     phone);
+      setText('view-bio',       bio);
+      setText('view-location',  location);
+      document.getElementById('display-name').textContent = `${firstName} ${lastName}`;
+      document.getElementById('avatar-initials').textContent = (firstName[0]+lastName[0]).toUpperCase();
+      document.getElementById('nav-user-name').textContent = firstName;
+
+      showAlert('personal-success', 'Profile updated successfully!');
+      setTimeout(() => toggleEdit('personal'), 1500);
+
+    } catch (err) {
+      showAlert('personal-error', 'Failed to save. ' + err.message);
+    }
+
+    btn.disabled = false; btn.textContent = 'Save changes';
+  };
+
+  // ── SAVE TRAVEL PREFERENCES ───────────────────────────────────
+  window.saveTravel = async function() {
+    const btn = document.getElementById('save-travel-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Saving…';
+
+    const travelStyle = document.getElementById('edit-travelStyle').value;
+    const favRegion   = document.getElementById('edit-favRegion').value;
+    const budget      = document.getElementById('edit-budget').value;
+
+    try {
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        travelStyle, favRegion, budget,
+        updatedAt: serverTimestamp(),
+      });
+
+      userData = { ...userData, travelStyle, favRegion, budget };
+      setText('view-travelStyle', travelStyle);
+      setText('view-favRegion',   favRegion);
+      setText('view-budget',      budget);
+
+      showAlert('travel-success', 'Travel preferences saved!');
+      setTimeout(() => toggleEdit('travel'), 1500);
+
+    } catch (err) {
+      showAlert('travel-error', 'Failed to save. ' + err.message);
+    }
+
+    btn.disabled = false; btn.textContent = 'Save changes';
+  };
+
+  // ── LOGOUT ────────────────────────────────────────────────────
+  async function logout() {
+    await signOut(auth);
+    window.location.href = 'login.html';
+  }
+  document.getElementById('logout-btn').addEventListener('click', logout);
+  document.getElementById('logout-btn-2').addEventListener('click', logout);
+
+  // ── HELPERS ──────────────────────────────────────────────────
+  function showAlert(id, msg) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 4000);
+  }
+</script>
+</body>
+</html>
